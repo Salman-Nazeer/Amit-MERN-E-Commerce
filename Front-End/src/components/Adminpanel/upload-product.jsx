@@ -2,21 +2,34 @@ import React, { useState } from "react";
 import { CgClose } from "react-icons/cg";
 import productCategory from "../../helpers/productCategory";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import uploadImage from "../../helpers/uploadImage";
+import DisplayImage from "./displayImage";
 
 const uploadproduct = ({ onClose }) => {
   const [data, setData] = useState({
     productName: "",
     brandName: "",
     category: "",
-    productImage: "",
+    productImage: [],
     description: "",
     price: "",
     selling: "",
   });
+  const [openFullScreenImage, setopenFullScreenImage] = useState(false);
+  const [fullScreenImage, setfullScreenImage] = useState("");
 
   const handleOnChange = (e) => {};
-  const handleUploadProductImg = (e) => {
-    console.log("file", e);
+
+  const handleUploadProductImg = async (e) => {
+    const file = e.target.files[0];
+    const uploadImageCloudinary = await uploadImage(file);
+
+    setData((preve) => {
+      return {
+        ...preve,
+        productImage: [...preve.productImage, uploadImageCloudinary.url],
+      };
+    });
   };
 
   return (
@@ -92,16 +105,43 @@ const uploadproduct = ({ onClose }) => {
               </div>
             </div>
           </label>
-          <div>
-            <img
-              src=""
-              width={80}
-              height={80}
-              className="bg-slate-100 border "
-            />
+          <div className="flex items-center gap-2">
+            {data?.productImage[0] ? (
+              data.productImage.map((el) => {
+                return (
+                  <div className="w-20 h-20 cursor-pointer">
+                    <img
+                      src={el}
+                      alt={el}
+                      onClick={() => {
+                        setopenFullScreenImage(true);
+                        setfullScreenImage(el);
+                      }}
+                      className="w-full h-full object-cover bg-slate-100 border "
+                    />
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-red-600 text-xs">
+                *Please Upload Product Image
+              </p>
+            )}
           </div>
+
+          <button className="px-3 py-2 bg-red-600 text-white hover:bg-red-700">
+            Upload Product
+          </button>
         </form>
       </div>
+
+      {/* DISPLAY IMAGE ON FULL SIZE */}
+      {openFullScreenImage && (
+        <DisplayImage
+          onClose={() => setopenFullScreenImage(false)}
+          imgUrl={fullScreenImage}
+        />
+      )}
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import SummaryAPI from "../common/index";
 import { toast } from "react-toastify";
-import Context from "../context";
+import Context from "../context/index.js";
 
 const login = () => {
   const [showPassword, setshowPassword] = useState(false);
